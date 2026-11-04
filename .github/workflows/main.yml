@@ -2,8 +2,7 @@ name: Deploy Datespot to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -12,45 +11,57 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: github-pages
+  cancel-in-progress: false
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build website
-        run: npm run build
-
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload website
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./dist
-
   deploy:
-    needs: build
     runs-on: ubuntu-latest
-
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
+      - name: Check out website
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # The supplied ZIP does not include a pnpm-lock.yaml file.
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      # Vite must use /repo-name/ for normal GitHub Pages project URLs.
+      # User/organization sites named <owner>.github.io deploy at /.
+      - name: Configure public URL
+        shell: bash
+        run: |
+          repo_name="${GITHUB_REPOSITORY#*/}"
+          if [[ "$repo_name" == *.github.io ]]; then
+            echo "FIGMA_PUBLIC_URL=" >> "$GITHUB_ENV"
+          else
+            echo "FIGMA_PUBLIC_URL=/$repo_name" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build website
+        run: pnpm build
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload built website
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./dist
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
