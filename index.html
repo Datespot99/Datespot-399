@@ -1,27 +1,28 @@
 <!doctype html>
-<html lang="<!-- figma:lang -->">
+<html lang="en">
   <head>
-    <!-- figma:head-start -->
     <meta charset="UTF-8" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><!-- figma:title --></title>
-    <style>
-      html,
-      body {
-        height: 100%;
-        margin: 0;
-      }
-      #root {
-        height: 100%;
-      }
-    </style>
-    <!-- figma:head-end -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#120c1a" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta
+      name="description"
+      content="Datespot is a private, manually verified Telegram community in Bangalore to chat, call and meet real people."
+    />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <title>Datespot · Verified Telegram Community, Bangalore</title>
+    <script>
+      // Set theme before first paint to avoid a flash.
+      try {
+        var s = localStorage.getItem('ds_theme')
+        var dark = s ? s === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.classList.toggle('dark', dark)
+      } catch (e) {}
+    </script>
   </head>
   <body>
-    <!-- figma:body-start -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- figma:body-end -->
   </body>
 </html>
