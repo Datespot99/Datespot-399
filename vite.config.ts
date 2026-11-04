@@ -1,13 +1,22 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
-import path from 'node:path'
+import react from '@vitejs/plugin-react'
 
-// Relative base so the build works on GitHub Pages project URLs
-// custom domains and any static host.
 export default defineConfig({
-  base: './',
-  plugins: [react(), tailwindcss()],
-  resolve: { alias: { '@': path.resolve(__dirname, './src') } },
-  build: { target: 'es2020', chunkSizeWarningLimit: 600 },
+  plugins: [
+    // The React and Tailwind plugins are both required for Make, even if
+    // Tailwind is not being actively used – do not remove them
+    react(),
+    tailwindcss(),
+  ],
+  resolve: {
+    alias: {
+      // Alias @ to the src directory
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+
+  // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
+  assetsInclude: ['**/*.svg', '**/*.csv'],
 })
