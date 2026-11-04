@@ -39,17 +39,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      # Vite must use /repo-name/ for normal GitHub Pages project URLs.
-      # User/organization sites named <owner>.github.io deploy at /.
-      - name: Configure public URL
-        shell: bash
-        run: |
-          repo_name="${GITHUB_REPOSITORY#*/}"
-          if [[ "$repo_name" == *.github.io ]]; then
-            echo "FIGMA_PUBLIC_URL=" >> "$GITHUB_ENV"
-          else
-            echo "FIGMA_PUBLIC_URL=/$repo_name" >> "$GITHUB_ENV"
-          fi
+      # GitHub Pages deploys this repository at the custom domain
+      # https://datespot.in/. All built asset paths must start at /.
+      - name: Configure public URL for custom domain
+        run: echo "FIGMA_PUBLIC_URL=" >> "$GITHUB_ENV"
 
       - name: Build website
         run: pnpm build
